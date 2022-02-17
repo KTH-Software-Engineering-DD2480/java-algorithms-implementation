@@ -90,6 +90,40 @@ function has no documentation comment, which could make it difficult to understa
 
 #### @psalqvist
 
+
+| Function                                   | nLOC | `lizard` CCN | Manual CCN |
+| --------                                   | ---: | ---------: | ---------: |
+| `BinarySearchTree.replaceNodeWithNode`     | 45   | 22         | 22         |
+| `BinarySearchTree.getDFS`                  | 60   | 23         | 23         |
+
+##### 1.
+The results of manual count and lizard's count are equal for CNN. In the manual count, I count a ternary operation as adding 1 to the CNN, as lizard seems to do so. CNN = 2 initially, then I add 1 for `if`, `for`, `while`, `else if`, `&&` and `||` (not for `else`), and subtract 1 to CNN when reaching a `return` statement.
+
+##### 2.
+It seems that nLOC correlates somewhat with CNN.
+
+##### 3.
+###### replaceNodeWithNode
+Takes `nodeToRemoved` and `replacementNode` as input, updates the children of `replacementNode` and finally it's parent.
+
+###### getDFS
+Takes `order` as input, which determines if we should run inorder, preorder or postorder on the DFS. Arranges nodes in an array `nodes` in order according to the DFS search, and returns that array.
+
+##### 4.
+No need to handle exceptions in either of the functions.
+
+##### 5.
+###### replaceNodeWithNode
+It is stated that `replacementNode` can be null and that `nodeToRemoved` can't be null in the documentation. Although it is not specified in what way the outcome differs in respect to whether any of these to inputs are null or not null.
+
+###### getDFS
+Could be stated in the documentation that if the root of the BST is null the function simply returns an empty array. Shouldn't have to browse through the code to find this fact. Although it is stated that the input `order` determines how the array is sorted, this could be explained in more detail.
+
+
+
+
+
+
 #### @Kubha99
 
 #### @ekorre1001
