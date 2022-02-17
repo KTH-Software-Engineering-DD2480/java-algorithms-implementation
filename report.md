@@ -36,6 +36,56 @@ finish the report).
 
 #### @nolanderc
 
+| Function                      | nLOC | `lizard` CCN | Manual CCN |
+| --------                      | ---: | ---------: | ---------: |
+| `BinaryHeapArray.heapDown`    | 62   | 41         | 38         |
+| `IntervalTree.Interval.query` | 44   | 27         | 27         |
+
+##### 1.
+
+`lizard` seems to count ternary operators (`condition ? if_true : if_false`) as
+having cyclomatic complexity 1. I did the same in the manual results above. The
+difference between `lizard`'s and my manual results is a bit harder to explain. In
+my manual version I subtracted 1 from the CCN for each exit point (`return`) in
+the code, using the following formula
+([source](https://en.wikipedia.org/wiki/Cyclomatic_complexity#Definition)):
+```
+CCN = d - e + 2
+```
+where `d` is the number of decicion points (`if`s, `for`s, `while`s, `&&`, `||`,
+etc.) and `e` the number of exit points (ie. `return`s). If we ignore the term
+`e` and pretend that there's a single exit point (ie. `e = 1`) we would end up
+with the same answer as `lizard`.
+
+##### 2.
+
+The complexity of the functions seems to be correlated with their length.
+
+##### 3.
+
+A large source of the complexity in the `heapDown` function is handling cases
+where either some value is `null` or checking what "mode" we are in (sorting in
+ascending or descending order). Other than that, the code is quite simple in nature, all its doing is finding the relative order between three elements.
+
+For `query` we have a similar situation, there are a lot of checks for `null`,
+and code is duplicated depending on if a number is less than another, or not.
+
+##### 4.
+
+Every function call/`throw` could potentially be thought of as another branch
+either resulting in a branch (if it is caught in a `try-catch`) or an exit point
+(if its not caught).
+
+
+##### 5.
+
+The documentation in the `query` function is quite lacking. It is not
+immediately obvious what the function even does (not to mention explaining what
+branches check for). The `heapDown` documentation is somewhat better, which at
+least includes comments on what the branches are checking for. But the actual
+function has no documentation comment, which could make it difficult to understand what it's doing if you aren't familiar with heaps.
+
+
 #### @mantaur
 
 #### @psalqvist
