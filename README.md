@@ -31,7 +31,7 @@ ant build
 ## Running the Tests
 
 ```sh
-ant run_test
+ant run_tests
 ```
 
 ## Running the Benchmarks
