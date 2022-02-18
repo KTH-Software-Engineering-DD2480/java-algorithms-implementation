@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage;
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage.Scope;
+
 /**
  * An interval tree is an ordered tree data structure to hold intervals.
  * Specifically, it allows one to efficiently find all intervals that overlap
@@ -177,50 +180,120 @@ public class IntervalTree<O extends Object> {
          * @return data at index.
          */
         public IntervalData<O> query(long index) {
+            Scope scope = BranchCoverage.beginScope("IntervalTree.query", new String[] {
+                    "entry-point",
+                    "index-less-than-center",
+                    "index-less:for-data-in-overlap",
+                    "index-less:data-start-greater-index",
+                    "index-less:data-start-less-index",
+                    "index-less:update-results",
+                    "index-less:combine-results",
+                    "index-less:temp-is-null",
+                    "index-greater-than-center",
+                    "index-greater:for-data-in-overlap",
+                    "index-greater:data-end-less-index",
+                    "index-greater:data-end-greater-index",
+                    "index-greater:update-results",
+                    "index-greater:combine-results",
+                    "index-greater:temp-is-null",
+                    "index-less-than-center-again",
+                    "index-less-again:left-not-null",
+                    "index-less-again:update-results",
+                    "index-less-again:combine-results",
+                    "index-less-again:temp-is-null",
+                    "index-less-again:left-is-null",
+                    "index-greater-than-center-again",
+                    "index-greater-again:right-not-null",
+                    "index-greater-again:update-results",
+                    "index-greater-again:combine-results",
+                    "index-greater-again:temp-is-null",
+                    "index-greater-again:right-is-null"
+            });
+
+            scope.reached("entry-point");
+
             IntervalData<O> results = null;
             if (index < center) {
+                scope.reached("index-less-than-center");
                 // overlap is sorted by start point
             	Collections.sort(overlap,START_COMPARATOR);
                 for (IntervalData<O> data : overlap) {
-                    if (data.start > index)
+                    scope.reached("index-less:for-data-in-overlap");
+                    if (data.start > index) {
+                        scope.reached("index-less:data-start-greater-index");
                         break;
+                    }
+                    scope.reached("index-less:data-start-less-index");
 
                     IntervalData<O> temp = data.query(index);
-                    if (results == null && temp != null)
+                    if (results == null && temp != null) {
+                        scope.reached("index-less:update-results");
                         results = temp;
-                    else if (results != null && temp != null)
+                    } else if (results != null && temp != null) {
+                        scope.reached("index-less:combine-results");
                         results.combined(temp);
+                    } else {
+                        scope.reached("index-less:temp-is-null");
+                    }
                 }
             } else if (index >= center) {
+                scope.reached("index-greater-than-center");
                 // overlap is reverse sorted by end point
             	Collections.sort(overlap,END_COMPARATOR);
                 for (IntervalData<O> data : overlap) {
-                    if (data.end < index)
+                    scope.reached("index-greater:for-data-in-overlap");
+                    if (data.end < index) {
+                        scope.reached("index-greater:data-end-less-index");
                         break;
+                    }
+                    scope.reached("index-greater:data-end-greater-index");
 
                     IntervalData<O> temp = data.query(index);
-                    if (results == null && temp != null)
+                    if (results == null && temp != null) {
+                        scope.reached("index-greater:update-results");
                         results = temp;
-                    else if (results != null && temp != null)
+                    } else if (results != null && temp != null) {
+                        scope.reached("index-greater:combine-results");
                         results.combined(temp);
+                    } else {
+                        scope.reached("index-greater:temp-is-null");
+                    }
                 }
             }
 
             if (index < center) {
+                scope.reached("index-less-than-center-again");
                 if (left != null) {
+                    scope.reached("index-less-again:left-not-null");
                     IntervalData<O> temp = left.query(index);
-                    if (results == null && temp != null)
+                    if (results == null && temp != null) {
+                        scope.reached("index-less-again:update-results");
                         results = temp;
-                    else if (results != null && temp != null)
+                    } else if (results != null && temp != null) {
+                        scope.reached("index-less-again:combine-results");
                         results.combined(temp);
+                    } else {
+                        scope.reached("index-less-again:temp-is-null");
+                    }
+                } else {
+                    scope.reached("index-less-again:left-is-null");
                 }
             } else if (index >= center) {
+                scope.reached("index-greater-than-center-again");
                 if (right != null) {
+                    scope.reached("index-greater-again:right-not-null");
                     IntervalData<O> temp = right.query(index);
-                    if (results == null && temp != null)
+                    if (results == null && temp != null) {
+                        scope.reached("index-greater-again:update-results");
                         results = temp;
-                    else if (results != null && temp != null)
+                    } else if (results != null && temp != null) {
+                        scope.reached("index-greater-again:combine-results");
                         results.combined(temp);
+                    } else {
+                        scope.reached("index-greater-again:temp-is-null");
+                    }
+                } else {
+                    scope.reached("index-greater-again:right-is-null");
                 }
             }
             return results;
