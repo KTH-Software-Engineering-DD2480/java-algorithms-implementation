@@ -184,64 +184,48 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
         }
 
         protected void heapDown(int index) {
-            T value = this.array[index];
-            if (value==null)
-                return;
+            int nodeToMoveIndex = heapDownIndexToMove(index);
 
-            int leftIndex = getLeftIndex(index);
-            int rightIndex = getRightIndex(index);
-            T left = (leftIndex != Integer.MIN_VALUE && leftIndex < this.size) ? this.array[leftIndex] : null;
-            T right = (rightIndex != Integer.MIN_VALUE && rightIndex < this.size) ? this.array[rightIndex] : null;
-
-            if (left == null && right == null) {
-                // Nothing to do here
-                return;
-            }
-
-            T nodeToMove = null;
-            int nodeToMoveIndex = -1;
-            if ((type == Type.MIN && left != null && right != null && value.compareTo(left) > 0 && value.compareTo(right) > 0)
-                || (type == Type.MAX && left != null && right != null && value.compareTo(left) < 0 && value.compareTo(right) < 0)) {
-                // Both children are greater/lesser than node
-                if ((right!=null) && 
-                    ((type == Type.MIN && (right.compareTo(left) < 0)) || ((type == Type.MAX && right.compareTo(left) > 0)))
-                ) {
-                    // Right is greater/lesser than left
-                    nodeToMove = right;
-                    nodeToMoveIndex = rightIndex;
-                } else if ((left!=null) && 
-                           ((type == Type.MIN && left.compareTo(right) < 0) || (type == Type.MAX && left.compareTo(right) > 0))
-                ) {
-                    // Left is greater/lesser than right
-                    nodeToMove = left;
-                    nodeToMoveIndex = leftIndex;
-                } else {
-                    // Both children are equal, use right
-                    nodeToMove = right;
-                    nodeToMoveIndex = rightIndex;
-                }
-            } else if ((type == Type.MIN && right != null && value.compareTo(right) > 0)
-                       || (type == Type.MAX && right != null && value.compareTo(right) < 0)
-            ) {
-                // Right is greater/lesser than node
-                nodeToMove = right;
-                nodeToMoveIndex = rightIndex;
-            } else if ((type == Type.MIN && left != null && value.compareTo(left) > 0)
-                       || (type == Type.MAX && left != null && value.compareTo(left) < 0)
-            ) {
-                // Left is greater/lesser than node
-                nodeToMove = left;
-                nodeToMoveIndex = leftIndex;
-            }
             // No node to move, stop recursion
-            if (nodeToMove == null)
+            if (nodeToMoveIndex < 0)
                 return;
 
             // Re-factor heap sub-tree
-            this.array[nodeToMoveIndex] = value;
+            T nodeToMove = this.array[nodeToMoveIndex];
+            this.array[nodeToMoveIndex] = this.array[index];
             this.array[index] = nodeToMove;
 
             heapDown(nodeToMoveIndex);
+        }
+
+        private int heapDownIndexToMove(int index) {
+            T value = this.array[index];
+
+            int leftIndex = getLeftIndex(index);
+            int rightIndex = getRightIndex(index);
+            T left = (leftIndex < this.size) ? this.array[leftIndex] : null;
+            T right = (rightIndex < this.size) ? this.array[rightIndex] : null;
+
+            // determine the order we want nodes in
+            int desiredOrder = (type == Type.MIN) ? -1 : 1;
+            int undesiredOrder = -desiredOrder;
+
+            // do checks against null and perform comparisons against the parent value.
+            // If their order does not match the desired, we need to swap them.
+            boolean leftShouldSwap = left != null && Integer.signum(value.compareTo(left)) == undesiredOrder;
+            boolean rightShouldSwap = right != null && Integer.signum(value.compareTo(right)) == undesiredOrder;
+
+            // handle different cases depending on which child needs to swap with the parent
+            if (leftShouldSwap & rightShouldSwap) {
+                // if both need to swap, make sure that swapping preserves the desired order
+                return (Integer.signum(left.compareTo(right)) == desiredOrder) ? leftIndex : rightIndex;
+            } else if (leftShouldSwap) {
+                return leftIndex;
+            } else if (rightShouldSwap) {
+                return rightIndex;
+            } else {
+                return -1;
+            }
         }
 
         // Grow the array by 50%
