@@ -88,6 +88,30 @@ function has no documentation comment, which could make it difficult to understa
 
 #### @mantaur
 
+| Function                                                           | nLOC | `lizard` CCN   | Manual CCN |
+| --------                                                           | ---- | -------------- | ---------- |
+| `SegmentTree.FlatSegmentTree.NonOverlappingSegment.query`          | 62   | 28             | 18         |
+| `SegmentTree.DynamicSegmentTree.OverlappingSegment.createFromList` | 44   | 17             | 17         |
+
+##### 1.
+My manual count of the createFromList function mathces that of lizards counting, however my manual count of query is off by almost 30% or by a count of 10. If however I do not consider the numerous returns scattered throughout the function as decreasing the CCN by one I get the same count as lizard.
+
+##### 2.
+For the two functions analyzed there seems to be some correlation between nloc and ccn.
+
+##### 3.
+###### query
+The datastructure who's query function this concerns returns another custom datastructure of non-overlapping segment(s) if they exist.
+
+###### createFromList
+Create's a segment tree from corresponding data in a list with segments.
+
+##### 4.
+Neither function throw any exceptions.
+
+##### 5.
+Both functions are members of the `SegmentTree` class datastructure. Neither of the functions are very clear on the possible outcomes in the form of comments. Rather to understand the possible outcomes one would get a better understanding by looking at the actual code and class structure. 
+
 #### @psalqvist
 
 
