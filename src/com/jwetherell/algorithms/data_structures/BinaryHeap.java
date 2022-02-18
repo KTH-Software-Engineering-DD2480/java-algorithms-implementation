@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage;
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage.Scope;
 import com.jwetherell.algorithms.data_structures.interfaces.IHeap;
 
 /**
@@ -184,16 +186,42 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
         }
 
         protected void heapDown(int index) {
+            Scope scope = BranchCoverage.beginScope("BinaryHeapArray.heapDown", new String[] {
+                "entry-point",
+                "value-null",
+                "value-not-null",
+                "left-and-right-null",
+                "both-children-greater-lesser-than-node",
+                "right-is-lesser-greater-than-left", 
+                "left-is-lesser-greater-than-right", 
+                "both-children-equal", 
+                "right-is-greater-lesser-than-node",
+                "left-is-greater-lesser-than-node",
+                "left-right-equal-to-node",
+                "left-is-greater-lesser-than-node",
+                "no-node-to-move",
+                "move-node",
+            });
+
+            scope.reached("entry-point");
+
             T value = this.array[index];
-            if (value==null)
+            if (value==null) {
+                scope.reached("value-null");
                 return;
+            }
+
+            scope.reached("value-not-null");
 
             int leftIndex = getLeftIndex(index);
             int rightIndex = getRightIndex(index);
+
+            // NOTE: ignoring ternary operators as they aren't really branches.
             T left = (leftIndex != Integer.MIN_VALUE && leftIndex < this.size) ? this.array[leftIndex] : null;
             T right = (rightIndex != Integer.MIN_VALUE && rightIndex < this.size) ? this.array[rightIndex] : null;
 
             if (left == null && right == null) {
+                scope.reached("left-and-right-null");
                 // Nothing to do here
                 return;
             }
@@ -202,20 +230,24 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
             int nodeToMoveIndex = -1;
             if ((type == Type.MIN && left != null && right != null && value.compareTo(left) > 0 && value.compareTo(right) > 0)
                 || (type == Type.MAX && left != null && right != null && value.compareTo(left) < 0 && value.compareTo(right) < 0)) {
+                scope.reached("both-children-greater-lesser-than-node");
                 // Both children are greater/lesser than node
                 if ((right!=null) && 
                     ((type == Type.MIN && (right.compareTo(left) < 0)) || ((type == Type.MAX && right.compareTo(left) > 0)))
                 ) {
+                    scope.reached("right-is-lesser-greater-than-left");
                     // Right is greater/lesser than left
                     nodeToMove = right;
                     nodeToMoveIndex = rightIndex;
                 } else if ((left!=null) && 
                            ((type == Type.MIN && left.compareTo(right) < 0) || (type == Type.MAX && left.compareTo(right) > 0))
                 ) {
+                    scope.reached("left-is-lesser-greater-than-right");
                     // Left is greater/lesser than right
                     nodeToMove = left;
                     nodeToMoveIndex = leftIndex;
                 } else {
+                    scope.reached("both-children-equal");
                     // Both children are equal, use right
                     nodeToMove = right;
                     nodeToMoveIndex = rightIndex;
@@ -223,19 +255,30 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
             } else if ((type == Type.MIN && right != null && value.compareTo(right) > 0)
                        || (type == Type.MAX && right != null && value.compareTo(right) < 0)
             ) {
+                scope.reached("right-is-greater-lesser-than-node");
                 // Right is greater/lesser than node
                 nodeToMove = right;
                 nodeToMoveIndex = rightIndex;
             } else if ((type == Type.MIN && left != null && value.compareTo(left) > 0)
                        || (type == Type.MAX && left != null && value.compareTo(left) < 0)
             ) {
+                scope.reached("left-is-greater-lesser-than-node");
                 // Left is greater/lesser than node
                 nodeToMove = left;
                 nodeToMoveIndex = leftIndex;
+            } else {
+                scope.reached("left-right-equal-to-node");
             }
+
+            scope.reached("left-is-greater-lesser-than-node");
+
             // No node to move, stop recursion
-            if (nodeToMove == null)
+            if (nodeToMove == null) {
+                scope.reached("no-node-to-move");
                 return;
+            }
+
+            scope.reached("move-node");
 
             // Re-factor heap sub-tree
             this.array[nodeToMoveIndex] = value;
