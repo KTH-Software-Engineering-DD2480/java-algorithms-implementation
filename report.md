@@ -140,6 +140,51 @@ Carried out refactoring (optional, P+):
 
 git diff ...
 
+
+### @nolanderc: `BinaryHeapArray.heapDown`
+
+The main goal of refactoring should be to reduce the amount of duplication in the `if` statements. For example, there is one that looks like this:
+```java
+if ((type == Type.MIN && left != null && right != null && value.compareTo(left) > 0 && value.compareTo(right) > 0)
+ || (type == Type.MAX && left != null && right != null && value.compareTo(left) < 0 && value.compareTo(right) < 0) {
+    ...
+}
+```
+Here the checks for `left != null` and `right != null` are duplicated twice each. Also the comparisons against `value` are repeated twice, but with different operators (`<` and `>`). This pattern is repeated an additional 2-4 times, depending on how you count. 
+
+We can reduce the cyclomatic complexity of this code by restructuring the code so that each check for null only happens once, and which comparison to do against the value is determined by the `type` only a single time. Applying these changes results in something the following:
+
+```java
+// determine the order we want nodes in once
+int desiredOrder = (type == Type.MIN) ? -1 : 1;
+int undesiredOrder = -desiredOrder;
+
+// Do checks against null and perform comparisons against the parent value.
+// If their order does not match the desired, we need to swap them.
+boolean leftShouldSwap = left != null && Integer.signum(value.compareTo(left)) == undesiredOrder;
+boolean rightShouldSwap = right != null && Integer.signum(value.compareTo(right)) == undesiredOrder;
+
+// handle different cases depending on which child needs to swap with the parent
+if (leftShouldSwap & rightShouldSwap) {
+    // if both need to swap, make sure that swapping preserves the desired order
+    return (Integer.signum(left.compareTo(right)) == desiredOrder) ? leftIndex : rightIndex;
+} else if (leftShouldSwap) {
+    return leftIndex;
+} else if (rightShouldSwap) {
+    return rightIndex;
+} else {
+    return -1;
+}
+```
+
+This is essentially everything the old 46 nLOC function did, but with multiple levels of nested `if` statements and convuluted logic. In the end, the new version uses two functions with a cyclomatic complexity of 2 and 10, respectively. Compare this to the old version which had a cyclomatic complexity of 41.
+
+For a full diff, run the following:
+```sh
+git show 9b4599289de7c734e4cd7364ce8535fc7d32be90
+```
+
+
 ## Coverage
 
 ### Tools
