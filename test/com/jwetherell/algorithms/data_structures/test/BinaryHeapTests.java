@@ -1,6 +1,7 @@
 package com.jwetherell.algorithms.data_structures.test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collection;
@@ -80,5 +81,21 @@ public class BinaryHeapTests {
         tHeapNull.add(11);
         tHeapNull.clear();
         assertNull(tHeapNull.getHeadValue()); // we expect null here
+    }
+
+    // Exercices case in `BinaryHeapArray.heapDown` when the parent is less than
+    // both its children, but the children are equal
+    @Test
+    public void testHeapDownChildrenLessButEqual() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        heap.add(7);
+        heap.add(3);
+        heap.add(3);
+        heap.add(2);
+        assertEquals(7, (int)heap.removeHead());
+        assertEquals(3, (int)heap.removeHead());
+        assertEquals(3, (int)heap.removeHead());
+        assertEquals(2, (int)heap.removeHead());
+        assertNull(heap.removeHead());
     }
 }
