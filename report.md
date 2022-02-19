@@ -173,6 +173,12 @@ Document your experience in using a "new"/different coverage tool.
 How well was the tool documented? Was it possible/easy/difficult to
 integrate it with your build environment?
 
+### NOTES
+
+#### @ekorre1001
+
+The code coverage tool I am using is OpenClover which works with the Ant build tool. I followed the provided quick start guide and managed to integrate it with Ant. It was quite easy to do the setup since only a few steps were required, although a few things did not work out initially.
+
 ### Your own coverage tool
 
 Show a patch (or link to a branch) that shows the instrumented code to
@@ -207,6 +213,20 @@ Test cases added:
 git diff ...
 
 Number of test cases added: two per team member (P) or at least four (P+).
+
+### NOTES
+
+#### @ekorre1001
+
+Changed to another function because:
+
+BTree::validateNode: Barely any test for the data structure and no test for this specific function which makes it harder to understand.
+
+Multiplication::multiplyUsingFFT: Above 98% code coverage
+
+The requirements + report can be found [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing)
+
+5 Test cases added and can be found in the PrimeTest.java
 
 ## Self-assessment: Way of working
 
