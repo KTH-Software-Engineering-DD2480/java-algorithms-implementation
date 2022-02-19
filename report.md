@@ -152,6 +152,36 @@ Could be stated in the documentation that if the root of the BST is null the fun
 
 #### @ekorre1001
 
+| Function                                   | nLOC | `lizard` CCN | Manual CCN |
+| --------                                   | ---: | ---------: | ---------: |
+| `BTree.validateNode`                       | 59   | 22         | 6          |
+| `Multiplication.multiplyUsingFFT`          | 68   | 21         | 18         |
+
+##### 1.
+
+Like @psalqvist, we start with CCN = 2 then add 1 for `if`, `for`, `while`, `else if`, `&&` and `||` (not for `else`), and subtract 1 to CCN when reaching a `return` statement. The result shows a lower manual CCN. It is because that in both functions there are more than 1 return point, especially in the `BTree.validateNode`, almost every `if` statement is followed by a `return` code. 
+
+##### 2.
+Looking at the CCN result from lizard it seems like NLOC correlates with CCN. The manual count for `Multiplication.multiplyUsingLogs` also indicates that.
+
+##### 3.
+###### validateNode
+Takes a `node` object as input and validates the node according to the B-Tree invariants. Returns `True` if valid, else `false`.
+
+###### multiplyUsingFFT
+Takes two `string` objects as input and extract the numbers, then multiply the two numbers using Fast Fourier transform method. Returns the result as a `string`.
+
+##### 4.
+There are no exceptions in either of the functions.
+
+##### 5.
+###### validateNode
+This function is well documented since there are many comments that explain what some part of the function does. It is also clear what the input and output are.
+
+###### multiplyUsingFFT
+There are no comments in the code which makes it harder for the reader to know what each part does. However, if you are familiar with the FFT method it can be intuitive. 
+
+
 
 
 ## Refactoring
