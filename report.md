@@ -238,6 +238,39 @@ For a full diff, run the following:
 git show 9b4599289de7c734e4cd7364ce8535fc7d32be90
 ```
 
+### @ekorre1001: `Multiplication.multiplyUsingFFT`
+
+To improve the cyclomatic complexity we want to either remove or reduce the use of if, tenary operations and loops. In the multiplyUsingFFT we can find a lot of if statements used to investigate both of the input numbers since they are strings. For instance the following is used to check whether the product is negative.
+
+```java
+if ((a.charAt(0) == '-' && b.charAt(0) != '-') || (a.charAt(0) != '-' && b.charAt(0) == '-')) {
+      negative = true;
+}
+```
+This can be improved by converting both of the strings to integers and check if the product is negative or not.
+
+```java
+int x = Integer.parseInt(a);
+int y = Integer.parseInt(b);
+if(x*y < 0) negative = true;
+```
+By doing this we have reduced the cyclomatic complexity but the drawback is that we initiate new variables and we are dependent on another library.
+
+Lastly, we can remove the use of some commonly used operations (like the following) by promoting them to a function. For instance, since both strings are edited to remove the minus symbol, we can reduce the complexity by adding a helper function that gets called for each string. The drawback is of course those additional functions.
+```java
+if (a.charAt(0) == '-') {
+            a = a.substring(1);
+}
+if (b.charAt(0) == '-') {
+           b = b.substring(1);
+}
+```
+
+Overall, we managed to reduce the CCN from 21 to 13.
+
+Git diff: Check page 4 of this [doc](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
+
+
 
 ## Coverage
 
