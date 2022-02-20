@@ -240,7 +240,7 @@ git show 9b4599289de7c734e4cd7364ce8535fc7d32be90
 
 ### @ekorre1001: `Multiplication.multiplyUsingFFT`
 
-To improve the cyclomatic complexity we want to either remove or reduce the use of if, tenary operations and loops. In the multiplyUsingFFT we can find a lot of if statements used to investigate both of the input numbers since they are strings. For instance the following is used to check whether the product is negative.
+To improve the cyclomatic complexity we want to either remove or reduce the use of `if`, `for`, `while`, `else if`, `&&` and `||`. In the multiplyUsingFFT we can find a lot of if statements used to investigate both of the input numbers since they are strings. For instance the following is used to check whether the product is negative.
 
 ```java
 if ((a.charAt(0) == '-' && b.charAt(0) != '-') || (a.charAt(0) != '-' && b.charAt(0) == '-')) {
@@ -256,20 +256,57 @@ if(x*y < 0) negative = true;
 ```
 By doing this we have reduced the cyclomatic complexity but the drawback is that we initiate new variables and we are dependent on another library.
 
-Lastly, we can remove the use of some commonly used operations (like the following) by promoting them to a function. For instance, since both strings are edited to remove the minus symbol, we can reduce the complexity by adding a helper function that gets called for each string. The drawback is of course those additional functions.
+Lastly, we can remove the use of some commonly used operations by promoting them to a function. For instance, since both strings are edited to remove the minus symbol (the following code), we can reduce the complexity by adding a helper function that gets called for each string. The drawback is of course those additional functions.
 ```java
 if (a.charAt(0) == '-') {
-            a = a.substring(1);
+    a = a.substring(1);
 }
 if (b.charAt(0) == '-') {
-           b = b.substring(1);
+    b = b.substring(1);
 }
 ```
 
-Overall, we managed to reduce the CCN from 21 to 13.
+In the end, we managed to reduce the CCN from 21 to 13.
 
-Git diff: Check page 4 of this [doc](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
+Git diff: Check the refactor section [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
 
+### `BTree.validateNode`
+
+As with the previous function we aim to reduce the use of `if`, `for`, `while`, `else if`, `&&` and `||`. In this case a lot of if statements were used to check a specific condition and directly followed by a `return`. For example the following:
+
+```java
+if (keySize < minKeySize) {
+    return false;
+} else if (keySize > maxKeySize) {
+    return false;
+} else if (childrenSize == 0) {
+    return true;
+} else if (keySize != (childrenSize - 1)) {
+    return false;
+} else if (childrenSize < minChildrenSize) {
+    return false;
+} else if (childrenSize > maxChildrenSize) {
+    return false;
+}
+```
+
+This can be reduced by creating a helper function that does the same thing and then we just need to check the value returned by the helper function. The code above can be replaced with the following:
+
+```java
+// make the check in another function and save the result
+int checkNonRoot = validateNonRootHelper(keySize, childrenSize);
+// return the corresponding boolean
+if (checkNonRoot == 0) {
+    return false;
+} else if (checkNonRoot == 1) {
+    return true;
+}
+```
+The drawback is that we need to add a few additional functions and variables.
+
+In the end, we managed to reduce the CCN from 22 to 14.
+
+Git diff: Check the refactor section [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
 
 
 ## Coverage
