@@ -144,11 +144,32 @@ It is stated that `replacementNode` can be null and that `nodeToRemoved` can't b
 Could be stated in the documentation that if the root of the BST is null the function simply returns an empty array. Shouldn't have to browse through the code to find this fact. Although it is stated that the input `order` determines how the array is sorted, this could be explained in more detail.
 
 
-
-
-
-
 #### @Kubha99
+| Function                                   | nLOC | `lizard` CCN | Manual CCN |
+| --------                                   | ---: | ---------: | ---------: |
+| `RedBlackTree.balanceAfterDelete`           | 72   | 22         | 21         |
+| `RedBlackTree.balanceAfterInsert`          | 46   | 18         | 15         |
+
+##### 1.
+
+Like @psalqvist, I set CCN=2 and for each `if`, `for`, `while`, `else if`, `&&` and `||` (not for `else`) i added 1 and for each return i subtracted with 1. There was a slight difference between the results computed from manual count and the counting from lizard tool.
+
+##### 2. 
+There does exist a similarity between the length of the function and the complexity for it. 
+
+##### 3. 
+###### balanceAfterInsert
+Has input of `RedBlackNode` as input and balances the given tree, this function is called once we insert a node in the tree
+
+###### balanceAfterDelete
+Similar to `balanceAfterInsert` this function takes a `RedBlackNode` and balances the tree after a delete
+
+##### 4. 
+In `balanceAfterDelete` there exists a case where an execption needs to be handled. 
+
+##### 5. 
+Both of the functions are well documented and there exists line comments explaining what operations are done and sometimes why. 
+There also exists documentation for input as well as output.
 
 #### @ekorre1001
 
