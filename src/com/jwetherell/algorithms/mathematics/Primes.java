@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage;
+
 
 /**
  * @author Justin Wetherell <phishman3579@gmail.com>
@@ -58,27 +60,60 @@ public class Primes {
      * divides n then n is prime: the only prime factor of n is n itself
      **/
     public static final boolean isPrime(long number) {
-        if (number == 1)
+
+        // declare a new scope
+        BranchCoverage.Scope scope = BranchCoverage.beginScope("Prime.isPrime", new String[]{
+            "entry point",
+            "if1",
+            "if2",
+            "if3",
+            "if4",
+            "if5",
+            "while",
+            "whileIf1",
+            "whileIf2",
+        });
+
+        scope.reached("entry point");
+
+        if (number == 1){
+            scope.reached("if1");
             return false;
-        if (number < 4)
+        }
+        if (number < 4){
+            scope.reached("if2");
             return true; // 2 and 3 are prime
-        if (number % 2 == 0)
+        }
+        if (number % 2 == 0){
+            scope.reached("if3");
             return false; // short circuit
-        if (number < 9)
+        }
+        if (number < 9){
+            scope.reached("if4");
             return true; // we have already excluded 4, 6 and 8.
         // (testing for 5 & 7)
-        if (number % 3 == 0)
+        }
+        if (number % 3 == 0){
+            scope.reached("if5");
             return false; // short circuit
+        }
         long r = (long) (Math.sqrt(number)); // n rounded to the greatest integer
         // r so that r*r<=n
         int f = 5;
         while (f <= r) {
-            if (number % f == 0)
+            scope.reached("while");
+            if (number % f == 0){
+                scope.reached("whileIf1");
                 return false;
-            if (number % (f + 2) == 0)
+            }
+            if (number % (f + 2) == 0){
+                scope.reached("whileIf2");
                 return false;
+            }
             f += 6;
         }
+        // Get a summary of the report (one is automatically saved to the file `branch-coverage-report.txt` once the program terminates).
+        BranchCoverage.Report report = BranchCoverage.createReport();
         return true;
     }
 
