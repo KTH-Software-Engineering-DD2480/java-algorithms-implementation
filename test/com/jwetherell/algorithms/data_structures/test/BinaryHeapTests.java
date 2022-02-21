@@ -1,6 +1,8 @@
 package com.jwetherell.algorithms.data_structures.test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collection;
@@ -80,5 +82,63 @@ public class BinaryHeapTests {
         tHeapNull.add(11);
         tHeapNull.clear();
         assertNull(tHeapNull.getHeadValue()); // we expect null here
+    }
+
+    // Exercices case in `BinaryHeapArray.heapDown` when the parent is less than
+    // both its children, but the children are equal
+    @Test
+    public void testHeapDownChildrenLessButEqualMax() {
+        BinaryHeap.BinaryHeapArray<Integer> aMaxHeap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        aMaxHeap.add(7);
+        aMaxHeap.add(3);
+        aMaxHeap.add(3);
+        aMaxHeap.add(2);
+        assertEquals(7, (int)aMaxHeap.removeHead());
+        assertEquals(3, (int)aMaxHeap.removeHead());
+        assertEquals(3, (int)aMaxHeap.removeHead());
+        assertEquals(2, (int)aMaxHeap.removeHead());
+        assertNull(aMaxHeap.removeHead());
+    }
+
+    // Exercices case in `BinaryHeapArray.heapDown` when the parent is greater than
+    // both its children, but the children are equal
+    @Test
+    public void testHeapDownChildrenLessButEqualMin() {
+        BinaryHeap.BinaryHeapArray<Integer> aMinHeap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MIN);
+        aMinHeap.add(2);
+        aMinHeap.add(3);
+        aMinHeap.add(3);
+        aMinHeap.add(7);
+        assertEquals(2, (int)aMinHeap.removeHead());
+        assertEquals(3, (int)aMinHeap.removeHead());
+        assertEquals(3, (int)aMinHeap.removeHead());
+        assertEquals(7, (int)aMinHeap.removeHead());
+        assertNull(aMinHeap.removeHead());
+    }
+
+    @Test
+    public void testValidateNodeValid() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        heap.setArrayUnsafe(new Integer[]{ 3, 2, 1 });
+        assertTrue(heap.validate());
+    }
+
+    // Improves branch coverage in `validateNode` from 57.7% to 65.4%
+    @Test
+    public void testValidateNodeMaxInvalidLeft() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+
+        // An invalid heap (wrong ordering) should be flagged as invalid
+        heap.setArrayUnsafe(new Integer[]{ 3, 4, 1 });
+        assertFalse(heap.validate());
+    }
+
+    // Improves branch coverage in `validateNode` from 65.4% to 81.2%
+    @Test
+    public void testValidateNodeMaxInvalidRight() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        // Check that invalid order is checked for right child as well
+        heap.setArrayUnsafe(new Integer[]{ 3, 2, 4 });
+        assertFalse(heap.validate());
     }
 }
