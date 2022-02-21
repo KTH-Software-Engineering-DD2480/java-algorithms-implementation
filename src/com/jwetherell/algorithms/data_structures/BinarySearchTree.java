@@ -680,6 +680,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
                 "has-left-children",
                 "has-right-children",
                 "has-children",
+                "has-following-number-of-children",
                 "has-multiple-children",
                 "get-tree-string",
             });
@@ -716,6 +717,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
             if (children != null) {
                 scope.reached("has-children");
                 for (int i = 0; i < children.size() - 1; i++) {
+                    scope.reached("has-following-number-of-children");
                     builder.append(getString(children.get(i), prefix + (isTail ? "    " : "│   "), false));
                 }
                 if (children.size() >= 1) {
