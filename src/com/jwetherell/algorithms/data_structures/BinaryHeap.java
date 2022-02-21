@@ -305,17 +305,19 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
                 T left = this.array[leftIndex];
                 if ((type == Type.MIN && value.compareTo(left) < 0) 
                     || (type == Type.MAX && value.compareTo(left) > 0)) {
-                    return validateNode(leftIndex);
+                    if (!validateNode(leftIndex)) return false;
+                } else {
+                    return false;
                 }
-                return false;
             }
             if (rightIndex != Integer.MIN_VALUE && rightIndex < size) {
                 T right = this.array[rightIndex];
                 if ((type == Type.MIN && value.compareTo(right) < 0)
                     || (type == Type.MAX && value.compareTo(right) > 0)) {
-                    return validateNode(rightIndex);
+                    if (!validateNode(rightIndex)) return false;
+                } else {
+                    return false;
                 }
-                return false;
             }
 
             return true;
