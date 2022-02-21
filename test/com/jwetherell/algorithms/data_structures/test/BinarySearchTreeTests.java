@@ -140,4 +140,57 @@ public class BinarySearchTreeTests {
         bst.getDFS(DepthFirstSearchOrder.postOrder);
     }
 
+    /** null tree */
+    @Test
+    public void testgetStringNullTree() {
+        BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>();
+        String bstString = bst.toString();
+        String expectedString = "Tree has no nodes.";
+        Assert.assertEquals(expectedString, bstString);
+    }
+
+    /** 4 2 5 1 3 */
+    @Test
+    public void testgetString() {
+        String bstString = testBST.toString();
+        String expectedString = "└── 4\n" +
+                                "    ├── (left) 2\n" +
+                                "    │   ├── (left) 1\n" +
+                                "    │   └── (right) 3\n" +
+                                "    └── (right) 5\n";
+        Assert.assertEquals(expectedString, bstString);
+    }
+
+    /** 5 4 3 2 1 */
+    @Test
+    public void testgetStringDescendingTree() {
+        BinarySearchTree<Integer> testBST = new BinarySearchTree<Integer>();
+        for (int i=5; i>0; i--) {
+            testBST.add(i);
+        }
+        String bstString = testBST.toString();
+        String expectedString = "└── 5\n" +
+                                "    └── (left) 4\n" +
+                                "        └── (left) 3\n" +
+                                "            └── (left) 2\n" +
+                                "                └── (left) 1\n";
+        Assert.assertEquals(expectedString, bstString);
+    }
+
+    /** 1 2 3 4 5 */
+    @Test
+    public void testgetStringAscendingTree() {
+        BinarySearchTree<Integer> testBST = new BinarySearchTree<Integer>();
+        for (int i=1; i<6; i++) {
+            testBST.add(i);
+        }
+        String bstString = testBST.toString();
+        String expectedString = "└── 1\n" +
+                                "    └── (right) 2\n" +
+                                "        └── (right) 3\n" +
+                                "            └── (right) 4\n" +
+                                "                └── (right) 5\n";
+        Assert.assertEquals(expectedString, bstString);
+    }
 }
+
