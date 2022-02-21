@@ -412,15 +412,29 @@ The requirements + report can be found [here](https://docs.google.com/document/d
 
 #### @nolanderc
 
-`BinaryHeapArray.heapDown` before: 94.1%. `BinaryHeapArray.heapDown` after: 100.0%.
+`BinaryHeapArray.heapDown` before: 94.1%, after: 100.0%.
 
 Branch coverage report: https://docs.google.com/document/d/1IVLQTIkl8IiemVskQ_JFw1sNe5EBXXEWpTxYIQ4-NV0/edit?usp=sharing
 
 For new test cases, see:
 
 ```sh
+git show 395749c08a93e8b8a063e87849e44543fe1189ac
+```
+
+Since the `heapDown` function already had such high branch coverage I also wrote
+tests for `BinaryHeapArray.validateNode`:
+
+`BinaryHeapArray.validateNode` before: 57.7%, after: 100.0%.
+
+```sh
 git show 8e6d8c7d8d36417133fe66f2c8d80a153d23b3f9 
-git show 3596497b8e0af7a31921f6693173bdca5b2f2a36
+```
+
+While writing these tests, I also found a bug in the source code. The fix can be seen here: 
+
+```sh
+git show 12d42662a86bc770915c15f5d2d24d877b107c06
 ```
 
 ## Self-assessment: Way of working
