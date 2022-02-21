@@ -1,6 +1,7 @@
 package com.jwetherell.algorithms.data_structures.test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collection;
@@ -80,5 +81,31 @@ public class BinaryHeapTests {
         tHeapNull.add(11);
         tHeapNull.clear();
         assertNull(tHeapNull.getHeadValue()); // we expect null here
+    }
+
+    @Test
+    public void testValidateNodeValid() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        heap.setArrayUnsafe(new Integer[]{ 3, 2, 1 });
+        assertTrue(heap.validate());
+    }
+
+    // Improves branch coverage in `validateNode` from 57.7% to 65.4%
+    @Test
+    public void testValidateNodeMaxInvalidLeft() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+
+        // An invalid heap (wrong ordering) should be flagged as invalid
+        heap.setArrayUnsafe(new Integer[]{ 3, 4, 1 });
+        assertFalse(heap.validate());
+    }
+
+    // Improves branch coverage in `validateNode` from 65.4% to 81.2%
+    @Test
+    public void testValidateNodeMaxInvalidRight() {
+        BinaryHeap.BinaryHeapArray<Integer> heap = new BinaryHeap.BinaryHeapArray<Integer>(BinaryHeap.Type.MAX);
+        // Check that invalid order is checked for right child as well
+        heap.setArrayUnsafe(new Integer[]{ 3, 2, 4 });
+        assertFalse(heap.validate());
     }
 }

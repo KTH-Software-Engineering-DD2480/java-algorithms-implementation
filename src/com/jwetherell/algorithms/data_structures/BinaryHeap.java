@@ -107,6 +107,16 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
         }
 
         /**
+         * Create a heap from an already "heapified" array.
+         * If this is not the case (ie. the array is in arbitrary order, behaviour is undefined).
+         * @param items The heapified array
+         */
+        public void setArrayUnsafe(T[] items) {
+            this.size = items.length;
+            this.array = Arrays.copyOf(items, Integer.max(items.length, MINIMUM_SIZE));
+        }
+
+        /**
          * {@inheritDoc}
          */
         @Override
