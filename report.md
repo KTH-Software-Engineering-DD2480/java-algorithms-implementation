@@ -358,6 +358,20 @@ git diff ...
 What kinds of constructs does your tool support, and how accurate is
 its output?
 
+#### @nolanderc
+
+See `git show 9ef482092816b3367f4d4b45214821ee11019fe3`
+
+It supports `if` statements, `while` loops and `for` loops. The output should
+show exactly how many times a code block was executed, and also notify if a code
+block has not been executed. Example:
+
+```
+BranchCoverageTest.branchCoverageWithNotReached:
+  - entry point: 1
+  - not reached: 0 <-- NOT REACHED
+```
+
 ### Evaluation
 
 1. How detailed is your coverage measurement?
@@ -382,6 +396,7 @@ Number of test cases added: two per team member (P) or at least four (P+).
 
 ### NOTES
 
+
 #### @ekorre1001
 
 Changed to another function because:
@@ -393,6 +408,20 @@ Multiplication::multiplyUsingFFT: Above 98% code coverage
 The requirements + report can be found [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing)
 
 5 Test cases added and can be found in the PrimeTest.java
+
+
+#### @nolanderc
+
+`BinaryHeapArray.heapDown` before: 94.1%. `BinaryHeapArray.heapDown` after: 100.0%.
+
+Branch coverage report: https://docs.google.com/document/d/1IVLQTIkl8IiemVskQ_JFw1sNe5EBXXEWpTxYIQ4-NV0/edit?usp=sharing
+
+For new test cases, see:
+
+```sh
+git show 8e6d8c7d8d36417133fe66f2c8d80a153d23b3f9 
+git show 3596497b8e0af7a31921f6693173bdca5b2f2a36
+```
 
 ## Self-assessment: Way of working
 
