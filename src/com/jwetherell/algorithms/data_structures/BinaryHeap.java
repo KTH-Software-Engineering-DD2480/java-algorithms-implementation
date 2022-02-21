@@ -107,6 +107,16 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
         }
 
         /**
+         * Create a heap from an already "heapified" array.
+         * If this is not the case (ie. the array is in arbitrary order, behaviour is undefined).
+         * @param items The heapified array
+         */
+        public void setArrayUnsafe(T[] items) {
+            this.size = items.length;
+            this.array = Arrays.copyOf(items, Integer.max(items.length, MINIMUM_SIZE));
+        }
+
+        /**
          * {@inheritDoc}
          */
         @Override
@@ -305,17 +315,19 @@ public interface BinaryHeap<T extends Comparable<T>> extends IHeap<T> {
                 T left = this.array[leftIndex];
                 if ((type == Type.MIN && value.compareTo(left) < 0) 
                     || (type == Type.MAX && value.compareTo(left) > 0)) {
-                    return validateNode(leftIndex);
+                    if (!validateNode(leftIndex)) return false;
+                } else {
+                    return false;
                 }
-                return false;
             }
             if (rightIndex != Integer.MIN_VALUE && rightIndex < size) {
                 T right = this.array[rightIndex];
                 if ((type == Type.MIN && value.compareTo(right) < 0)
                     || (type == Type.MAX && value.compareTo(right) > 0)) {
-                    return validateNode(rightIndex);
+                    if (!validateNode(rightIndex)) return false;
+                } else {
+                    return false;
                 }
-                return false;
             }
 
             return true;
