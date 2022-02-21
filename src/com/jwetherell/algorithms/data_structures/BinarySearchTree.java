@@ -667,65 +667,47 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
         public static <T extends Comparable<T>> String getString(BinarySearchTree<T> tree) {
             if (tree.root == null)
                 return "Tree has no nodes.";
-            return getString(tree.root, "", true);
+            return getStringRoot(tree.root, "", true);
+        }
+
+        private static <T extends Comparable<T>> String getStringRoot(Node<T> node, String prefix, boolean isTail) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(prefix + (isTail ? "└── " : "├── ") + node.id + "\n");
+            List<Node<T>> children = new ArrayList<Node<T>>(2);
+            if (node.lesser != null || node.greater != null) {
+                children = new ArrayList<Node<T>>(2);
+                if (node.lesser != null)
+                    children.add(node.lesser);
+                if (node.greater != null)
+                    children.add(node.greater);
+                if (children.size() == 2)
+                    builder.append(getString(node.lesser, prefix + "    ", false));
+                builder.append(getString(children.get(children.size() - 1), prefix + (isTail ? "    " : "│   "), true));
+            }
+
+            return builder.toString();
         }
 
         private static <T extends Comparable<T>> String getString(Node<T> node, String prefix, boolean isTail) {
-            Scope scope = BranchCoverage.beginScope("BinarySearchTree.TreePrinter.getString", new String[] {
-                "entry-point",
-                "parent-exists",
-                "right-side",
-                "parent-doesn't-exist",
-                "has-left-or-right-children",
-                "has-left-children",
-                "has-right-children",
-                "has-children",
-                "has-following-number-of-children",
-                "has-multiple-children",
-                "get-tree-string",
-            });
-
-            scope.reached("entry-point");
-
             StringBuilder builder = new StringBuilder();
 
-            if (node.parent != null) {
-                scope.reached("parent-exists");
-                String side = "left";
-                if (node.equals(node.parent.greater)) {
-                    scope.reached("right-side");
-                    side = "right";
-                }
-                builder.append(prefix + (isTail ? "└── " : "├── ") + "(" + side + ") " + node.id + "\n");
-            } else {
-                scope.reached("parent-doesn't-exist");
-                builder.append(prefix + (isTail ? "└── " : "├── ") + node.id + "\n");
-            }
-            List<Node<T>> children = null;
+            String side = "left";
+            if (node.equals(node.parent.greater))
+                side = "right";
+            builder.append(prefix + (isTail ? "└── " : "├── ") + "(" + side + ") " + node.id + "\n");
+            
+            List<Node<T>> children = new ArrayList<Node<T>>(2);
             if (node.lesser != null || node.greater != null) {
-                scope.reached("has-left-or-right-children");
                 children = new ArrayList<Node<T>>(2);
-                if (node.lesser != null) {
-                    scope.reached("has-left-children");
+                if (node.lesser != null)
                     children.add(node.lesser);
-                }
-                if (node.greater != null) {
-                    scope.reached("has-right-children");
+                if (node.greater != null)
                     children.add(node.greater);
-                }
+                if (children.size() == 2)
+                    builder.append(getString(node.lesser, prefix + "│   ", false));
+                builder.append(getString(children.get(children.size() - 1), prefix + (isTail ? "    " : "│   "), true));
             }
-            if (children != null) {
-                scope.reached("has-children");
-                for (int i = 0; i < children.size() - 1; i++) {
-                    scope.reached("has-following-number-of-children");
-                    builder.append(getString(children.get(i), prefix + (isTail ? "    " : "│   "), false));
-                }
-                if (children.size() >= 1) {
-                    scope.reached("has-multiple-children");
-                    builder.append(getString(children.get(children.size() - 1), prefix + (isTail ? "    " : "│   "), true));
-                }
-            }
-            scope.reached("get-tree-string");
+
             return builder.toString();
         }
     }
