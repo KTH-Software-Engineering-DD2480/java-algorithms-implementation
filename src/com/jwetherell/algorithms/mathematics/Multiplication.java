@@ -53,20 +53,53 @@ public class Multiplication {
         return (a > 0 && b > 0 || a < 0 && b < 0) ? result : -result;
     }
 
+    public static String negativeStringHelper(String number){
+        if(number.charAt(0) == '-') {return number.substring(1);}
+
+        return number;
+    }
+
+    public static void fillCoeff(Complex[] arr, String number){
+
+        for (int i = 0; i < number.length(); i++) {
+            arr[i] = new Complex((double) (Character.getNumericValue(number.charAt(number.length() - i - 1))), 0.0);
+        }
+    }
+
     public static String multiplyUsingFFT(String a, String b) {
-        if (a.equals("0") || b.equals("0")) {
-            return "0";
-        }
+
+
+        // if (a.equals("0") || b.equals("0")) {
+        //     return "0";
+        // }
+        // boolean negative = false;
+        // if ((a.charAt(0) == '-' && b.charAt(0) != '-') || (a.charAt(0) != '-' && b.charAt(0) == '-')) {
+        //     negative = true;
+        // }
+
+        // ---------- instead the code above
+        int z = Integer.parseInt(a);
+        int y = Integer.parseInt(b);
         boolean negative = false;
-        if ((a.charAt(0) == '-' && b.charAt(0) != '-') || (a.charAt(0) != '-' && b.charAt(0) == '-')) {
-            negative = true;
-        }
-        if (a.charAt(0) == '-') {
-            a = a.substring(1);
-        }
-        if (b.charAt(0) == '-') {
-            b = b.substring(1);
-        }
+
+        if(z*y == 0) return "0";
+
+        if(z*y < 0) negative = true;
+        //-----------------
+
+
+        // if (a.charAt(0) == '-') {
+        //     a = a.substring(1);
+        // }
+        // if (b.charAt(0) == '-') {
+        //     b = b.substring(1);
+        // }
+
+        // --- instead of code above
+        a = negativeStringHelper(a);
+        b = negativeStringHelper(b);
+
+
         int size = 1;
         while (size < (a.length() + b.length())) {
             size *= 2;
@@ -77,12 +110,17 @@ public class Multiplication {
             aCoefficients[i] = new Complex();
             bCoefficients[i] = new Complex();
         }
-        for (int i = 0; i < a.length(); i++) {
-            aCoefficients[i] = new Complex((double) (Character.getNumericValue(a.charAt(a.length() - i - 1))), 0.0);
-        }
-        for (int i = 0; i < b.length(); i++) {
-            bCoefficients[i] = new Complex((double) (Character.getNumericValue(b.charAt(b.length() - i - 1))), 0.0);
-        }
+
+        // for (int i = 0; i < a.length(); i++) {
+        //     aCoefficients[i] = new Complex((double) (Character.getNumericValue(a.charAt(a.length() - i - 1))), 0.0);
+        // }
+        // for (int i = 0; i < b.length(); i++) {
+        //     bCoefficients[i] = new Complex((double) (Character.getNumericValue(b.charAt(b.length() - i - 1))), 0.0);
+        // }
+
+        // --- instead of code above
+        fillCoeff(aCoefficients, a);
+        fillCoeff(bCoefficients, b);
 
         FastFourierTransform.cooleyTukeyFFT(aCoefficients);
         FastFourierTransform.cooleyTukeyFFT(bCoefficients);
@@ -125,6 +163,20 @@ public class Multiplication {
         return result.toString();
     }
 
+    public static boolean checkNegative(ArrayList<Integer> arr, String number){
+        boolean IsNegative = false;
+
+        for (char n : number.toCharArray()){
+            if (n=='-') {
+                IsNegative = true;
+                continue;
+            }
+            arr.add(n-'0');
+        }
+
+        return IsNegative;
+    }
+
     public static String multiplyUsingLoopWithStringInput(String a, String b) {
         int k,i,j,carry=0,rem,flag=0,lim1,lim2,mul;
 
@@ -147,6 +199,12 @@ public class Multiplication {
             }
             second.add(n-'0');
         }
+
+        //--- Instead of the code above
+        // ArrayList<Integer> first = new ArrayList<Integer>();
+        // ArrayList<Integer> second = new ArrayList<Integer>();
+        // boolean aIsNegative = checkNegative(first, a);
+        // boolean bIsNegative = checkNegative(second, b);
 
         lim1=first.size()-1;
         lim2=second.size()-1;
