@@ -150,14 +150,25 @@ public class BinarySearchTreeTests {
     }
 
     /** 4 2 5 1 3 */
+    /** 5 2 6 1 3 0 4*/
     @Test
     public void testgetString() {
-        String bstString = testBST.toString();
-        String expectedString = "└── 4\n" +
+        BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>();
+        bst.add(5);
+        bst.add(2);
+        bst.add(6);
+        bst.add(1);
+        bst.add(3);
+        bst.add(0);
+        bst.add(4);
+        String bstString = bst.toString();
+        String expectedString = "└── 5\n" +
                                 "    ├── (left) 2\n" +
                                 "    │   ├── (left) 1\n" +
+                                "    │   │   └── (left) 0\n" +
                                 "    │   └── (right) 3\n" +
-                                "    └── (right) 5\n";
+                                "    │       └── (right) 4\n" +
+                                "    └── (right) 6\n";
         Assert.assertEquals(expectedString, bstString);
     }
 
