@@ -345,6 +345,10 @@ integrate it with your build environment?
 
 The code coverage tool I am using is OpenClover which works with the Ant build tool. I followed the provided quick start guide and managed to integrate it with Ant. It was quite easy to do the setup since only a few steps were required, although a few things did not work out initially.
 
+#### @mantaur
+
+Like @ekorre1001 I too use OpenClover. There were no hiccups in getting started with the tool once I had learned from G17 members experience using the tool and reading the quickstart guide.
+
 ### Your own coverage tool
 
 Show a patch (or link to a branch) that shows the instrumented code to
@@ -435,6 +439,18 @@ While writing these tests, I also found a bug in the source code. The fix can be
 
 ```sh
 git show 12d42662a86bc770915c15f5d2d24d877b107c06
+```
+
+#### @mantaur
+
+`BinarySearchTree.TreePrinter.getString` before: 0.0%, after: 96.1%.
+
+Branch coverage report: https://docs.google.com/document/d/1DI1iBl6Sr4eEB6ruFHFqF14WtQgAkcGSYj0F7vOc_HU/edit?usp=sharing
+
+4 new test cases to improve coverage can be seen:
+
+```sh
+git show 0b4093c79e6ae3ad6f61a6f9e3d22b7e6f285b66
 ```
 
 ## Self-assessment: Way of working
