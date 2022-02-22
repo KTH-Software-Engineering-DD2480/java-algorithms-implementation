@@ -8,8 +8,7 @@
   <property name="test" location="test"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-<taskdef resource="cloverlib.xml"/>
-<clover-env/>
+
   <path id="class.path">
     <fileset dir="lib">
       <include name="**/*.jar" />
