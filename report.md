@@ -259,6 +259,49 @@ For a full diff, run the following:
 git show 9b4599289de7c734e4cd7364ce8535fc7d32be90
 ```
 
+### @nolanderc: `IntervalTree.query`
+
+Here we use the same techniques as before: we remove duplicated code by recognizing that the only differences between two branches are a few variables. This means we can move everything but assignment of these variables outside the ifs, reducing the amount of duplicated code. For example, this was originally in the code:
+
+```java
+if (index < center) {
+    if (left != null) {
+        IntervalData<O> temp = left.query(index);
+        if (results == null && temp != null)
+            results = temp;
+        else if (results != null && temp != null)
+            results.combined(temp);
+    }
+} else if (index >= center) {
+    if (right != null) {
+        IntervalData<O> temp = right.query(index);
+        if (results == null && temp != null)
+            results = temp;
+        else if (results != null && temp != null)
+            results.combined(temp);
+    }
+}
+```
+
+Notice that the only difference between these branches is `left` and `right`. Thus, we can replace the above with:
+
+```java
+IntervalData<O> next = index < center ? left : right;
+if (next != null) {
+    IntervalData<O> temp = next.query(index);
+    if (temp != null) results = appendToInterval(results, temp);
+}
+```
+
+where `appendToInterval` is a helper function performing the same function as the if statements before.
+
+We can then reuse these principles again to further reduce the complexity of the function down from 27 to one function with CCN 7 and another with 2.
+
+```sh
+git show 8246a9edbbf6aafb92b3c7e8cf7eb1b33ffb7ab5
+```
+
+
 ### @ekorre1001: `Multiplication.multiplyUsingFFT`
 
 To improve the cyclomatic complexity we want to either remove or reduce the use of `if`, `for`, `while`, `else if`, `&&` and `||`. In the multiplyUsingFFT we can find a lot of if statements used to investigate both of the input numbers since they are strings. For instance the following is used to check whether the product is negative.
