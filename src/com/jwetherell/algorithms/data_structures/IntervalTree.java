@@ -177,53 +177,36 @@ public class IntervalTree<O extends Object> {
          * @return data at index.
          */
         public IntervalData<O> query(long index) {
+            // Either sort overlaps by start or end point
+            Comparator<IntervalData<?>> overlapComparator = index < center ? START_COMPARATOR : END_COMPARATOR;
+            Collections.sort(overlap, overlapComparator);
+
             IntervalData<O> results = null;
-            if (index < center) {
-                // overlap is sorted by start point
-            	Collections.sort(overlap,START_COMPARATOR);
-                for (IntervalData<O> data : overlap) {
-                    if (data.start > index)
-                        break;
-
-                    IntervalData<O> temp = data.query(index);
-                    if (results == null && temp != null)
-                        results = temp;
-                    else if (results != null && temp != null)
-                        results.combined(temp);
-                }
-            } else if (index >= center) {
-                // overlap is reverse sorted by end point
-            	Collections.sort(overlap,END_COMPARATOR);
-                for (IntervalData<O> data : overlap) {
-                    if (data.end < index)
-                        break;
-
-                    IntervalData<O> temp = data.query(index);
-                    if (results == null && temp != null)
-                        results = temp;
-                    else if (results != null && temp != null)
-                        results.combined(temp);
-                }
+            for (IntervalData<O> data : overlap) {
+                IntervalData<O> temp = data.query(index);
+                if (temp == null) break;
+                results = appendToInterval(results, temp);
             }
 
-            if (index < center) {
-                if (left != null) {
-                    IntervalData<O> temp = left.query(index);
-                    if (results == null && temp != null)
-                        results = temp;
-                    else if (results != null && temp != null)
-                        results.combined(temp);
-                }
-            } else if (index >= center) {
-                if (right != null) {
-                    IntervalData<O> temp = right.query(index);
-                    if (results == null && temp != null)
-                        results = temp;
-                    else if (results != null && temp != null)
-                        results.combined(temp);
-                }
+            Interval<O> next = index < center ? left : right;
+            if (next != null) {
+                IntervalData<O> temp = next.query(index);
+                if (temp != null) results = appendToInterval(results, temp);
             }
+
             return results;
+        }
+
+        /**
+         * Append two intervals
+         * @param <O>
+         * @param target Where to store the results. If {@code null} uses {@code additional} instead.
+         * @param additional The additionall elements to add
+         * @return The result of appending {@code target} and {@code additional}.
+         */
+        private static<O> IntervalData<O> appendToInterval(IntervalData<O> target, IntervalData<O> additional) {
+            if (target == null) return additional;
+            else return target.combined(additional);
         }
 
         /**
