@@ -18,4 +18,11 @@ public class CoprimesTest {
         for(int i = 0; i < args.size(); i++)
             assertEquals(expected.get(i), Coprimes.getNumberOfCoprimes(args.get(i)));
     }
+
+    @Test
+    public void returnsZeroIfOne(){
+        long input = -1;
+        long result = 0;
+        assertEquals(result, Coprimes.getNumberOfCoprimes(input));
+    }
 }

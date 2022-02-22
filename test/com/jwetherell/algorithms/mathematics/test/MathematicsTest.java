@@ -195,6 +195,14 @@ public class MathematicsTest {
         }
     }
 
+    @Test 
+    public void testKnapSackIfValueNeqWeights(){
+        int[] values = {1, 2, 3};
+        int[] weights = {1, 2};
+        int capacity = 9;
+       assertTrue(Knapsack.zeroOneKnapsack(values, weights, capacity) == null);
+    }
+
     @Test
     public void chebyshevDistance() {
         long[] point1 = new long[]{1, 2};

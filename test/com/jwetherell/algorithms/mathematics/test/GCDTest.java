@@ -37,4 +37,13 @@ public class GCDTest {
         check = 5;
         assertTrue("Euclids GCD error. expected="+check+" got="+gcd, (gcd==check));
     }
+
+    @Test
+    public void testReversedInputEuclideanGCD(){
+        long x = 867;
+        long y = 1989;
+        long gcd = GreatestCommonDivisor.gcdUsingEuclides(x, y);
+        long check = 51; 
+        assertTrue(gcd==check);
+    }
 }
