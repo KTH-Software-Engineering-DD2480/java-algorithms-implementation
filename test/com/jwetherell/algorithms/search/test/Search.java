@@ -65,12 +65,12 @@ public class Search {
         assertTrue("Brute force error. expected=" + Integer.MAX_VALUE + " got=" + index, (index == Integer.MAX_VALUE));
     }
 
-    /*@Test
+   @Test
     public void testInterpolationRecursiveSearchIfStartEqualsEnd() {
         int[] input = {1};
         int result = InterpolationSearch.find(1, input );
-        assertTrue(result == Integer.MAX_VALUE);
-    }*/
+        assertTrue(result == 0);
+    }
 
     @Test
     public void testLowerBound() {
