@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.Queue;
 import java.util.Set;
 
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage;
+import com.jwetherell.algorithms.branch_coverage.BranchCoverage.Scope;
 import com.jwetherell.algorithms.data_structures.interfaces.ITree;
 
 /**
@@ -349,7 +351,29 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
      *            can be NULL.
      */
     protected void replaceNodeWithNode(Node<T> nodeToRemoved, Node<T> replacementNode) {
+        Scope scope = BranchCoverage.beginScope("BinarySearchTree.replaceNodeWithNode", new String[] {
+            "entry-point",
+            "replacement-not-null",
+            "remove-lesser-child-not-null-and-remove-lesser-child-not-replacement-node",
+            "remove-greater-child-not-null-and-remove-greater-child-not-replacement-node",
+            "replacement-parent-not-null-and-replacement-parent-not-remove-node",
+            "replacement-parent-lesser-not-null-and-replacement-parent-lesser-equals-replacement-node",
+            "replacement-child-greater-not-null",
+            "replacement-parent-greater-not-null-and-not-replacement-node",
+            "replacement-child-lesser-not-null",
+            "replacing-root-node",
+            "root-not-null",
+            "parent-lesser-not-null-and-equals-removed",
+            "replacement-not-null-1",
+            "parent-greater-not-null-and-equals-removed",
+            "replacement-not-null-2",
+            "decrement-size"
+        });
+
+        scope.reached("entry-point");
+
         if (replacementNode != null) {
+            scope.reached("replacement-not-null");
             // Save for later
             Node<T> replacementNodeLesser = replacementNode.lesser;
             Node<T> replacementNodeGreater = replacementNode.greater;
@@ -357,28 +381,43 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
             // Replace replacementNode's branches with nodeToRemove's branches
             Node<T> nodeToRemoveLesser = nodeToRemoved.lesser;
             if (nodeToRemoveLesser != null && nodeToRemoveLesser != replacementNode) {
+                scope.reached("remove-lesser-child-not-null-and-remove-lesser-child-not-replacement-node");
+
                 replacementNode.lesser = nodeToRemoveLesser;
                 nodeToRemoveLesser.parent = replacementNode;
             }
             Node<T> nodeToRemoveGreater = nodeToRemoved.greater;
             if (nodeToRemoveGreater != null && nodeToRemoveGreater != replacementNode) {
+                scope.reached("remove-greater-child-not-null-and-remove-greater-child-not-replacement-node");
+
                 replacementNode.greater = nodeToRemoveGreater;
                 nodeToRemoveGreater.parent = replacementNode;
             }
 
             // Remove link from replacementNode's parent to replacement
-            Node<T> replacementParent = replacementNode.parent;
+            Node<T> replacementParent = replacementNode.parent;            
             if (replacementParent != null && replacementParent != nodeToRemoved) {
+                scope.reached("replacement-parent-not-null-and-replacement-parent-not-remove-node");
+
                 Node<T> replacementParentLesser = replacementParent.lesser;
                 Node<T> replacementParentGreater = replacementParent.greater;
                 if (replacementParentLesser != null && replacementParentLesser == replacementNode) {
+                    scope.reached("replacement-parent-lesser-not-null-and-replacement-parent-lesser-equals-replacement-node");
                     replacementParent.lesser = replacementNodeGreater;
-                    if (replacementNodeGreater != null)
+                    if (replacementNodeGreater != null) {
+                        scope.reached("replacement-child-greater-not-null");
+
                         replacementNodeGreater.parent = replacementParent;
+                    }
                 } else if (replacementParentGreater != null && replacementParentGreater == replacementNode) {
+                    scope.reached("replacement-parent-greater-not-null-and-not-replacement-node");
+
                     replacementParent.greater = replacementNodeLesser;
-                    if (replacementNodeLesser != null)
+                    if (replacementNodeLesser != null) {
+                        scope.reached("replacement-child-lesser-not-null");
+
                         replacementNodeLesser.parent = replacementParent;
+                    }
                 }
             }
         }
@@ -387,20 +426,38 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
         // replacementNode
         Node<T> parent = nodeToRemoved.parent;
         if (parent == null) {
+            scope.reached("replacing-root-node");
+
             // Replacing the root node
             root = replacementNode;
-            if (root != null)
+            if (root != null) {
+                scope.reached("root-not-null");
+
                 root.parent = null;
+            }
         } else if (parent.lesser != null && (parent.lesser.id.compareTo(nodeToRemoved.id) == 0)) {
+            scope.reached("parent-lesser-not-null-and-equals-removed");
+
             parent.lesser = replacementNode;
-            if (replacementNode != null)
+            if (replacementNode != null) {
+                scope.reached("replacement-not-null-1");
+
                 replacementNode.parent = parent;
+            }                
         } else if (parent.greater != null && (parent.greater.id.compareTo(nodeToRemoved.id) == 0)) {
+            scope.reached("parent-greater-not-null-and-equals-removed");
+
             parent.greater = replacementNode;
-            if (replacementNode != null)
+            if (replacementNode != null) {
+                scope.reached("replacement-not-null-2");
+
                 replacementNode.parent = parent;
+            }
         }
+        scope.reached("decrement-size");
+
         size--;
+        BranchCoverage.createReport();
     }
 
     /**
@@ -798,3 +855,4 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
         }
     }
 }
+
