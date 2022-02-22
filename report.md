@@ -396,6 +396,19 @@ Number of test cases added: two per team member (P) or at least four (P+).
 
 ### NOTES
 
+#### @psalqvist
+
+`BinarySearchTree.replaceNodeWithNode` before: 0%, after: 96,9%
+
+Previously, there existed no explicit test cases for this function. Thus, branch coverage was 0%. Added 8 test cases to improve branch coverage to 96,9%. In the branch coverage report I only run explicit tests for `replaceNodeWithNode`. If not, implicit tests covered a lot of branches unintentionally. This way, the progression of the new explicit tests are more easy to follow.
+
+Branch coverage report: https://docs.google.com/document/d/1n01CraeifGIsWPX0nC88pzylQhwQNforvvrhc141y6M/edit
+
+New test cases:
+
+```sh
+git show cf3a7a4078b8bd8208ffc5c74101e9dd44c1ad69
+```
 
 #### @ekorre1001
 
