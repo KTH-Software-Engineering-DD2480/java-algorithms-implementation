@@ -258,7 +258,7 @@ public void removeParent(Node<T> removed, Node<T> replacement, Node<T> replaceme
 For the full changes, see:
 
 ```sh
-git show src/com/jwetherell/algorithms/data_structures/BinarySearchTree.java
+git show 901117ab917522fbe1bce573726f2a26c5446634
 ```
 
 ### @nolanderc: `BinaryHeapArray.heapDown`
