@@ -453,6 +453,32 @@ In the end, we managed to reduce the CCN from 22 to 14.
 
 Git diff: Check the refactor section [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
 
+### @Kubha_99 (Kunal Bhatnagar)
+
+I did refactoring plan for the following two functions,
+
+#### RedBlackTree: balanceAfterInsert
+
+It initially had a CC of 18 and was a quite long and complex function. By splitting the logic of the functions into two help function the complexity of that function was reduced to 7.
+The logic that would be divided into two subfunctions was the operations to perform is a specific node called uncle that could be either black or red. For this I seperated the logic into two subfunctions containing the logic for each of the two options.
+
+This plan was also implemented and can be seen by,
+
+```sh
+git show a6f5a82600dd192f69d845da782bc6f2225bb943
+```
+
+#### RedBlackTree: balanceAfterDelete
+This was a very large and complex function, entangled in a lot of logical if:s that could be simplified. It originally had a CC of 22. 
+After studying the function for a while i noticed that many of the conditions that the if statements check are repeated. They also tend to arrive at either the exact same state or the opposite.
+Hence they can be easier combined and structured into a "smarter" aggregated if loops in order to reduce the complexity. Another thing I found is that there is a very specific case containing logic that should be seperated. 
+The logic checks if a specific node is RED and if it is we need to perform a set of actions. 
+
+After this plan was implemented the complexity fell down to 13.
+
+```sh
+git show a6f5a82600dd192f69d845da782bc6f2225bb943
+```
 
 ## Coverage
 
@@ -567,6 +593,16 @@ While writing these tests, I also found a bug in the source code. The fix can be
 
 ```sh
 git show 12d42662a86bc770915c15f5d2d24d877b107c06
+```
+
+#### @Kubha_99 (Kunal Bhatnagar)
+
+`RedBlackTree:BalanceAfterInsert`and `RedBlackTree:BalanceAfterDelete`
+
+All information about coverage percentage and before after can be found at https://docs.google.com/document/d/1hvrr56Q9QfOv9k4Ixlnah9XqeZsu_Dx5NCEKpLBFNVk/edit?usp=sharing
+
+```sh
+git show 818905e88c856edab56d6efef6ac415597f7543b
 ```
 
 ### @mantaur (Mark Bergrahm)
