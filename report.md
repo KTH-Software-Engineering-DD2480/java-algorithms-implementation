@@ -341,7 +341,7 @@ The logic that would be divided into two subfunctions was the operations to perf
 This plan was also implemented and can be seen by,
 
 ```sh
-git show 12d42662a86bc770915c15f5d2d24d877b107c06
+git show a6f5a82600dd192f69d845da782bc6f2225bb943
 ```
 
 #### RedBlackTree: balanceAfterDelete
@@ -353,7 +353,7 @@ The logic checks if a specific node is RED and if it is we need to perform a set
 After this plan was implemented the complexity fell down to 13.
 
 ```sh
-git show 12d42662a86bc770915c15f5d2d24d877b107c06
+git show a6f5a82600dd192f69d845da782bc6f2225bb943
 ```
 
 ## Coverage
