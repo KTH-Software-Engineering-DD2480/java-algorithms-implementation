@@ -341,67 +341,65 @@ public class BinarySearchTree<T extends Comparable<T>> implements ITree<T> {
     /**
      * Replace nodeToRemoved with replacementNode in the tree.
      * 
-     * @param nodeToRemoved
-     *            Node<T> to remove replace in the tree. nodeToRemoved should
+     * @param removed
+     *            node to be replaced in the tree. removed should
      *            NOT be NULL.
-     * @param replacementNode
-     *            Node<T> to replace nodeToRemoved in the tree. replacementNode
+     * @param replacement
+     *            replacement node in the tree. replacement
      *            can be NULL.
      */
-    protected void replaceNodeWithNode(Node<T> nodeToRemoved, Node<T> replacementNode) {
-        if (replacementNode != null) {
-            // Save for later
-            Node<T> replacementNodeLesser = replacementNode.lesser;
-            Node<T> replacementNodeGreater = replacementNode.greater;
-
-            // Replace replacementNode's branches with nodeToRemove's branches
-            Node<T> nodeToRemoveLesser = nodeToRemoved.lesser;
-            if (nodeToRemoveLesser != null && nodeToRemoveLesser != replacementNode) {
-                replacementNode.lesser = nodeToRemoveLesser;
-                nodeToRemoveLesser.parent = replacementNode;
-            }
-            Node<T> nodeToRemoveGreater = nodeToRemoved.greater;
-            if (nodeToRemoveGreater != null && nodeToRemoveGreater != replacementNode) {
-                replacementNode.greater = nodeToRemoveGreater;
-                nodeToRemoveGreater.parent = replacementNode;
-            }
-
-            // Remove link from replacementNode's parent to replacement
-            Node<T> replacementParent = replacementNode.parent;
-            if (replacementParent != null && replacementParent != nodeToRemoved) {
-                Node<T> replacementParentLesser = replacementParent.lesser;
-                Node<T> replacementParentGreater = replacementParent.greater;
-                if (replacementParentLesser != null && replacementParentLesser == replacementNode) {
-                    replacementParent.lesser = replacementNodeGreater;
-                    if (replacementNodeGreater != null)
-                        replacementNodeGreater.parent = replacementParent;
-                } else if (replacementParentGreater != null && replacementParentGreater == replacementNode) {
-                    replacementParent.greater = replacementNodeLesser;
-                    if (replacementNodeLesser != null)
-                        replacementNodeLesser.parent = replacementParent;
-                }
-            }
+    public void replaceNodeWithNode(Node<T> removed, Node<T> replacement) {
+        if (replacement != null) {
+            Node<T> replacementLesser = replacement.lesser;
+            Node<T> replacementGreater = replacement.greater;
+            replaceChildren(removed, replacement);
+            removeParent(removed, replacement, replacementLesser, replacementGreater);
         }
+        updateParent(removed, replacement);
+    }
 
-        // Update the link in the tree from the nodeToRemoved to the
-        // replacementNode
-        Node<T> parent = nodeToRemoved.parent;
+    public void replaceChildren(Node<T> removed, Node<T> replacement) {
+        if (removed.lesser != null && removed.lesser != replacement) {
+            replacement.lesser = removed.lesser;
+            removed.lesser.parent = replacement;
+        }
+        if (removed.greater != null && removed.greater != replacement) {
+            replacement.greater = removed.greater;
+            removed.greater.parent = replacement;
+        }
+    }
+
+    public void removeParent(Node<T> removed, Node<T> replacement, Node<T> replacementLesser, Node<T> replacementGreater) {
+        if (replacement.parent == null || replacement.parent == removed) return;
+        
+        if (replacement.parent.lesser == replacement) {
+            replacement.parent.lesser = replacementGreater;
+            if (replacementGreater != null) replacementGreater.parent = replacement.parent;
+            return;
+        }
+        replacement.parent.greater = replacementLesser;
+        if(replacementLesser != null) replacementLesser.parent = replacement.parent;
+    }
+
+    public void updateParent(Node<T> removed, Node<T> replacement) {
+        Node<T> parent = removed.parent;
         if (parent == null) {
-            // Replacing the root node
-            root = replacementNode;
-            if (root != null)
-                root.parent = null;
-        } else if (parent.lesser != null && (parent.lesser.id.compareTo(nodeToRemoved.id) == 0)) {
-            parent.lesser = replacementNode;
-            if (replacementNode != null)
-                replacementNode.parent = parent;
-        } else if (parent.greater != null && (parent.greater.id.compareTo(nodeToRemoved.id) == 0)) {
-            parent.greater = replacementNode;
-            if (replacementNode != null)
-                replacementNode.parent = parent;
+            root = replacement;
+            if(replacement != null) root.parent = null;
+            size--;
+            return;
+        } 
+        if (replacement != null) {
+            replacement.parent = parent;
+        }
+        if(parent.lesser != null && parent.lesser.id.compareTo(removed.id) == 0) {
+            parent.lesser = replacement;
+        } else {
+            parent.greater = replacement;
         }
         size--;
     }
+
 
     /**
      * {@inheritDoc}
