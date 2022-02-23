@@ -1,5 +1,7 @@
 # Report for assignment 3
 
+> Group 17
+
 ## Project
 
 Name: Java : Algorithms and Data Structure
@@ -10,25 +12,65 @@ A collection of algorithms and data structures implemented by Justin Wetherell.
 
 ## Onboarding experience
 
-Did it build and run as documented?
-    
-See the assignment for details; if everything works out of the box,
-there is no need to write much here. If the first project(s) you picked
-ended up being unsuitable, you can describe the "onboarding experience"
-for each project, along with reason(s) why you changed to a different one.
+Initially, we had trouble even building the project. This was due to the complete lack of build instructions. It is not documented anywhere how you can run the tests, or even what build tool to use. In the end, we found a configuration file for Travis CI, which allowed us to deduce that the project uses the Apache Ant build system. After installing this tool, we were finally able to build and run the project without further issues. We submitted a Pull Request with updated build instructions in the README.
 
 
 ## Complexity
 
-1. What are your results for ten complex functions?
-   * Did all methods (tools vs. manual count) get the same result?
-   * Are the results clear?
-2. Are the functions just complex, or also long?
-3. What is the purpose of the functions?
-4. Are exceptions taken into account in the given measurements?
-5. Is the documentation clear w.r.t. all the possible outcomes?
+### 1. What are your results for ten complex functions?
+
+| Function                                                           | nLOC | `lizard` CCN | Manual CCN |
+| --------                                                           | ---: | ---------:   | ---------: |
+| `BinaryHeapArray.heapDown`                                         | 62   | 41           | 38         |
+| `IntervalTree.Interval.query`                                      | 44   | 27           | 27         |
+| `BinarySearchTree.replaceNodeWithNode`                             | 45   | 22           | 22         |
+| `BinarySearchTree.getDFS`                                          | 60   | 23           | 23         |
+| `BTree.validateNode`                                               | 59   | 22           | 6          |
+| `Multiplication.multiplyUsingFFT`                                  | 68   | 21           | 18         |
+| `RedBlackTree.balanceAfterDelete`                                  | 72   | 22           | 21         |
+| `RedBlackTree.balanceAfterInsert`                                  | 46   | 18           | 15         |
+| `SegmentTree.FlatSegmentTree.NonOverlappingSegment.query`          | 62   | 28           | 18         |
+| `SegmentTree.DynamicSegmentTree.OverlappingSegment.createFromList` | 44   | 17           | 17         |
+
+`lizard` seems to count ternary operators (`condition ? if_true : if_false`) as
+having cyclomatic complexity 1. I did the same in the manual results above. The
+difference between `lizard`'s and my manual results is a bit harder to explain. In
+my manual version I subtracted 1 from the CCN for each exit point (`return`) in
+the code, using the following formula
+([source](https://en.wikipedia.org/wiki/Cyclomatic_complexity#Definition)):
+```
+CCN = d - e + 2
+```
+where `d` is the number of decicion points (`if`s, `for`s, `while`s, `&&`, `||`,
+etc.) and `e` the number of exit points (ie. `return`s). If we ignore the term
+`e` and pretend that there's a single exit point (ie. `e = 1`) we would end up
+with the same answer as `lizard`.
 
 
+### 2. Are the functions just complex, or also long? 
+
+The complexity of the functions seems to be correlated with their length.
+
+
+### 3. What is the purpose of the functions?
+
+A lot of the complexity of the functions stems from handling multiple different
+cases in the same function. For example, there are cases where it is possible to
+change the behaivour of functions (order to visit nodes in DFS and if elements
+should be order largest-to-lowest or smallest-to-largest).
+
+Some uneccessary complexity arose from the use of poor case managing, ie. the same condition was checked multiple times in sub if/else branches.
+
+### 4. Are exceptions taken into account in the given measurements?
+
+We did not encounter code that dealt with exceptions (throwing or catching) so we could not determine if `lizard` took this into account. Since the oppurntunity did not present itself, we didn't have to consider the impact of exceptions. 
+
+### 5. Is the documentation clear w.r.t. all the possible outcomes?
+
+Functions were often not properly documented, especially in regards to mapping input to output depending on different cases. If functions had comments, they often were either very shallow, or just restated what was trivially inferred by the function name.
+
+
+<!--
 ### NOTES
 
 Here we can add notes from our work on the questions above (before we revise and
@@ -86,7 +128,7 @@ least includes comments on what the branches are checking for. But the actual
 function has no documentation comment, which could make it difficult to understand what it's doing if you aren't familiar with heaps.
 
 
-#### @mantaur
+#### @mantaur (Mark Bergrahm)
 
 | Function                                                           | nLOC | `lizard` CCN   | Manual CCN |
 | --------                                                           | ---- | -------------- | ---------- |
@@ -202,21 +244,60 @@ This function is well documented since there are many comments that explain what
 ###### multiplyUsingFFT
 There are no comments in the code which makes it harder for the reader to know what each part does. However, if you are familiar with the FFT method it can be intuitive. 
 
-
+-->
 
 
 ## Refactoring
 
-Plan for refactoring complex code:
+Below you'll find a number of functions we refactored in order to reduce their cyclomatic complexity.
 
-Estimated impact of refactoring (lower CC, but other drawbacks?).
+### @psalqvist (Philip Salqvist): `BinarySearchTree.replaceNodeWithNode`
 
-Carried out refactoring (optional, P+):
+Refactor to reduce duplication of `if` statements and `&&` operations mainly. To provide an example:
 
-git diff ...
+```java
+// Remove link from replacementNode's parent to replacement
+Node<T> replacementParent = replacementNode.parent;
+if (replacementParent != null && replacementParent != nodeToRemoved) {
+    Node<T> replacementParentLesser = replacementParent.lesser;
+    Node<T> replacementParentGreater = replacementParent.greater;
+    if (replacementParentLesser != null && replacementParentLesser == replacementNode) {
+        replacementParent.lesser = replacementNodeGreater;
+        if (replacementNodeGreater != null)
+            replacementNodeGreater.parent = replacementParent;
+    } else if (replacementParentGreater != null && replacementParentGreater == replacementNode) {
+        replacementParent.greater = replacementNodeLesser;
+        if (replacementNodeLesser != null)
+            replacementNodeLesser.parent = replacementParent;
+    }
+}
+```
 
+is reduced to:
 
-### @nolanderc: `BinaryHeapArray.heapDown`
+```java
+public void removeParent(Node<T> removed, Node<T> replacement, Node<T> replacementLesser, Node<T> replacementGreater) {
+    if (replacement.parent == null || replacement.parent == removed) return;
+
+    if (replacement.parent.lesser == replacement) {
+        replacement.parent.lesser = replacementGreater;
+        if (replacementGreater != null) replacementGreater.parent = replacement.parent;
+        return;
+    }
+    replacement.parent.greater = replacementLesser;
+    if(replacementLesser != null) replacementLesser.parent = replacement.parent;
+}
+```
+
+`replaceNodeWithNode` originally had an NCC of 30. Now the function is broken down into 4 functions with an NCC of 2, 5, 6 and 6.
+
+For the full changes, see:
+
+```sh
+git show 901117ab917522fbe1bce573726f2a26c5446634
+```
+
+### @nolanderc (Christofer Nolander): `BinaryHeapArray.heapDown`
 
 The main goal of refactoring should be to reduce the amount of duplication in the `if` statements. For example, there is one that looks like this:
 ```java
@@ -259,7 +340,50 @@ For a full diff, run the following:
 git show 9b4599289de7c734e4cd7364ce8535fc7d32be90
 ```
 
-### @ekorre1001: `Multiplication.multiplyUsingFFT`
+### @nolanderc (Christofer Nolander): `IntervalTree.query`
+
+Here we use the same techniques as before: we remove duplicated code by recognizing that the only differences between two branches are a few variables. This means we can move everything but assignment of these variables outside the ifs, reducing the amount of duplicated code. For example, this was originally in the code:
+
+```java
+if (index < center) {
+    if (left != null) {
+        IntervalData<O> temp = left.query(index);
+        if (results == null && temp != null)
+            results = temp;
+        else if (results != null && temp != null)
+            results.combined(temp);
+    }
+} else if (index >= center) {
+    if (right != null) {
+        IntervalData<O> temp = right.query(index);
+        if (results == null && temp != null)
+            results = temp;
+        else if (results != null && temp != null)
+            results.combined(temp);
+    }
+}
+```
+
+Notice that the only difference between these branches is `left` and `right`. Thus, we can replace the above with:
+
+```java
+IntervalData<O> next = index < center ? left : right;
+if (next != null) {
+    IntervalData<O> temp = next.query(index);
+    if (temp != null) results = appendToInterval(results, temp);
+}
+```
+
+where `appendToInterval` is a helper function performing the same function as the if statements before.
+
+We can then reuse these principles again to further reduce the complexity of the function down from 27 to one function with CCN 7 and another with 2.
+
+```sh
+git show 8246a9edbbf6aafb92b3c7e8cf7eb1b33ffb7ab5
+```
+
+
+### @ekorre1001 (Jiayi Guo): `Multiplication.multiplyUsingFFT`
 
 To improve the cyclomatic complexity we want to either remove or reduce the use of `if`, `for`, `while`, `else if`, `&&` and `||`. In the multiplyUsingFFT we can find a lot of if statements used to investigate both of the input numbers since they are strings. For instance the following is used to check whether the product is negative.
 
@@ -291,7 +415,7 @@ In the end, we managed to reduce the CCN from 21 to 13.
 
 Git diff: Check the refactor section [here](https://docs.google.com/document/d/1qRhKoisnicSaKS3oRQEs6EaFpCoqO1QLV4kNYcLeAFo/edit?usp=sharing).
 
-### `BTree.validateNode`
+### @ekorre1001 (Jiayi Guo): `BTree.validateNode`
 
 As with the previous function we aim to reduce the use of `if`, `for`, `while`, `else if`, `&&` and `||`. In this case a lot of if statements were used to check a specific condition and directly followed by a `return`. For example the following:
 
@@ -360,16 +484,7 @@ git show a6f5a82600dd192f69d845da782bc6f2225bb943
 
 ### Tools
 
-Document your experience in using a "new"/different coverage tool.
-
-How well was the tool documented? Was it possible/easy/difficult to
-integrate it with your build environment?
-
-### NOTES
-
-#### @ekorre1001
-
-The code coverage tool I am using is OpenClover which works with the Ant build tool. I followed the provided quick start guide and managed to integrate it with Ant. It was quite easy to do the setup since only a few steps were required, although a few things did not work out initially.
+The code coverage tool we used was OpenClover which works with the Ant build tool. We followed the provided quick start guide and managed to integrate it with Ant. It was quite easy to do the setup since only a few steps were required, although a few things did not work out initially. However, we were able to troubleshoot things and finally got it up and running.
 
 ### Your own coverage tool
 
@@ -384,13 +499,19 @@ git diff ...
 What kinds of constructs does your tool support, and how accurate is
 its output?
 
-#### @nolanderc
+See this table to look at the instrumented code:
 
-See `git show 9ef482092816b3367f4d4b45214821ee11019fe3`
+| Function Name                                   | Show Diff                                           |
+| -------------                                   | ---------                                           |
+| `BinaryHeapArray.heapDown`                      | `git show 9ef482092816b3367f4d4b45214821ee11019fe3` |
+| `BinarySearchTree.replaceNodeWithNode`          | `git show 7c8a37bd8f21ab6c6f370eb2ed62eb8bd30c27bf` |
+| `BinarySearchTree.TreePrinter.getString`        | `git show 4fb7392b531f9b68a7443b606655a55aed228918` |
+| `Prime.isPrime`                                 | `git show 4fb7392b531f9b68a7443b606655a55aed228918` |
 
-It supports `if` statements, `while` loops and `for` loops. The output should
+
+Our tool supports `if` statements, `while` loops and `for` loops. The output should
 show exactly how many times a code block was executed, and also notify if a code
-block has not been executed. Example:
+block has not been executed. For example:
 
 ```
 BranchCoverageTest.branchCoverageWithNotReached:
@@ -400,30 +521,26 @@ BranchCoverageTest.branchCoverageWithNotReached:
 
 ### Evaluation
 
-1. How detailed is your coverage measurement?
+#### 1. How detailed is your coverage measurement?
 
-2. What are the limitations of your own tool?
+Our tool takes into handles any language construct that contains a block of code. That includes `if`s, `try`-`catch`, and most loops, but excludes ternary expressions (`boolean ? true : false`) and uncaught exceptions. This is because branch execution is caught by making a function call with the instumentation class object.
 
-3. Are the results of your tool consistent with existing coverage tools?
+
+#### 2. What are the limitations of your own tool?
+
+If you want to measure given a function, you have to put in the effort to actually write all the instrumentation statements yourself. This can be a lot of effort. This was immediately obvious if you try to find a function with low branch coverage, as this requires about 5-10 minutes of effort just to investigate a single function. 
+
+
+#### 3. Are the results of your tool consistent with existing coverage tools?
+
+Comparing the output of OpenClover to our own tool, we see the same results (ie. after running the test suite, we see the same number of executions for any given branch).
+
 
 ## Coverage improvement
 
-Show the comments that describe the requirements for the coverage.
+Everyone added at least 4 additional test cases to the test suite.
 
-Report of old coverage: [link]
-
-Report of new coverage: [link]
-
-Test cases added:
-
-git diff ...
-
-Number of test cases added: two per team member (P) or at least four (P+).
-
-### NOTES
-
-
-#### @ekorre1001
+### @ekorre1001 (Jiayi Guo)
 
 Changed to another function because:
 
@@ -435,14 +552,27 @@ The requirements + report can be found [here](https://docs.google.com/document/d
 
 5 Test cases added and can be found in the PrimeTest.java
 
+### @psalqvist (Philip Salqvist)
 
-#### @nolanderc
+`BinarySearchTree.replaceNodeWithNode` before: 0%, after: 96,9%
+
+Previously, there existed no explicit test cases for this function. Thus, branch coverage was 0%. Added 8 test cases to improve branch coverage to 96,9%. In the branch coverage report I only run explicit tests for `replaceNodeWithNode`. If not, implicit tests covered a lot of branches unintentionally. This way, the progression of the new explicit tests are more easy to follow.
+
+Branch coverage report: https://docs.google.com/document/d/1n01CraeifGIsWPX0nC88pzylQhwQNforvvrhc141y6M/edit
+
+New test cases:
+
+```sh
+git show cf3a7a4078b8bd8208ffc5c74101e9dd44c1ad69
+```
+
+### @nolanderc (Christofer Nolander)
 
 `BinaryHeapArray.heapDown` before: 94.1%, after: 100.0%.
 
 Branch coverage report: https://docs.google.com/document/d/1IVLQTIkl8IiemVskQ_JFw1sNe5EBXXEWpTxYIQ4-NV0/edit?usp=sharing
 
-For new test cases, see:
+For the 2 new test cases, see:
 
 ```sh
 git show 395749c08a93e8b8a063e87849e44543fe1189ac
@@ -452,6 +582,8 @@ Since the `heapDown` function already had such high branch coverage I also wrote
 tests for `BinaryHeapArray.validateNode`:
 
 `BinaryHeapArray.validateNode` before: 57.7%, after: 100.0%.
+
+For the 2 new test cases, see:
 
 ```sh
 git show 8e6d8c7d8d36417133fe66f2c8d80a153d23b3f9 
@@ -473,18 +605,50 @@ All information about coverage percentage and before after can be found at https
 git show 818905e88c856edab56d6efef6ac415597f7543b
 ```
 
+### @mantaur (Mark Bergrahm)
+
+`BinarySearchTree.TreePrinter.getString` before: 0.0%, after: 96.1%.
+
+Branch coverage report: https://docs.google.com/document/d/1DI1iBl6Sr4eEB6ruFHFqF14WtQgAkcGSYj0F7vOc_HU/edit?usp=sharing
+
+4 new test cases to improve coverage can be seen:
+
+```sh
+git show 0b4093c79e6ae3ad6f61a6f9e3d22b7e6f285b66
+```
+
 ## Self-assessment: Way of working
 
-Current state according to the Essence standard: ...
+### Current state according to the Essence standard
 
-Was the self-assessment unanimous? Any doubts about certain items?
+We evaluate that we continued developing our way of working from the last assignment and have so far fullfilled the "In Use" and "In Place" states where checks are applicable. For example the "Procedures are in place to handle feedback on the team’s way of working" seems more suited for a team working on a long running project. Meanwhile we start and end assignments weekly, which does not give us much room to apply any feedback while working. Thus we end up gathering feedback during the assignment presentations and subsequent team meeting, which we then incorporate into our way of working for the next assignment. We are currently starting to look at entering the "Working well" state for the coming assignments, as we already fulfill some of the items in this stage (such as "the team naturally applies the practices without thinking about them" and "the tools naturally support the way that the team works").
 
-How have you improved so far?
+### Was the self-assessment unanimous? Any doubts about certain items?
 
-Where is potential for improvement?
+Sels-assessment was unanimous amongst the group members. When doubts occured, we discussed and resolved them together.
+
+### How have you improved so far?
+
+The team is naturally applying tools and practices. Especially regarding the use of git and github, such as branch naming conventions, creating issues and pull requests, as well as reviewing pull requests on a regular basis.
+
+
+### Where is potential for improvement?
+
+As mentioned above in "Current state..." the team is aiming to enter the "Working well" state of the Essence standard. As such one key area for improvement is to continually tune our use of practices and tools, which can be achieved by learning more about them and using a greater extent of their functionality.
 
 ## Overall experience
 
-What are your main take-aways from this project? What did you learn?
+### What are your main take-aways from this project? What did you learn?
 
-Is there something special you want to mention here?
+- Branch coverage can be a good way to identify bugs in the source code (for
+example, see the bug in `BinaryHeapArray.validateNode` above).
+- High cyclomatic complexity is not neccessarily bound to high algorithmic or
+general complexity. We found many cases of poorly written code increasing the
+complexity of quite simple functions. Sometimes thorough code review can greatly
+reduce the CCN whilst keeping functionality and making the code more easily
+understandable.
+- Some group members didn't explicitly reflect upon cyclomatic complexity before
+this assignment. It is evidently a great way to keep code easy to read and
+understand.
+
+
