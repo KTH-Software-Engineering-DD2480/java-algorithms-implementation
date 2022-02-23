@@ -437,6 +437,16 @@ While writing these tests, I also found a bug in the source code. The fix can be
 git show 12d42662a86bc770915c15f5d2d24d877b107c06
 ```
 
+#### @Kubha_99 (Kunal Bhatnagar)
+
+`RedBlackTree:BalanceAfterInsert`and `RedBlackTree:BalanceAfterDelete`
+
+All information about coverage percentage and before after can be found at https://docs.google.com/document/d/1hvrr56Q9QfOv9k4Ixlnah9XqeZsu_Dx5NCEKpLBFNVk/edit?usp=sharing
+
+```sh
+git show 818905e88c856edab56d6efef6ac415597f7543b
+```
+
 ## Self-assessment: Way of working
 
 Current state according to the Essence standard: ...
