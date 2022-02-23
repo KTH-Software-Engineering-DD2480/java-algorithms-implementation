@@ -215,6 +215,51 @@ Carried out refactoring (optional, P+):
 
 git diff ...
 
+### @psalqvist: `BinarySearchTree.replaceNodeWithNode`
+
+Refactor to reduce duplication of `if` statements and `&&` operations mainly. To provide an example:
+
+```java
+// Remove link from replacementNode's parent to replacement
+Node<T> replacementParent = replacementNode.parent;
+if (replacementParent != null && replacementParent != nodeToRemoved) {
+    Node<T> replacementParentLesser = replacementParent.lesser;
+    Node<T> replacementParentGreater = replacementParent.greater;
+    if (replacementParentLesser != null && replacementParentLesser == replacementNode) {
+        replacementParent.lesser = replacementNodeGreater;
+        if (replacementNodeGreater != null)
+            replacementNodeGreater.parent = replacementParent;
+    } else if (replacementParentGreater != null && replacementParentGreater == replacementNode) {
+        replacementParent.greater = replacementNodeLesser;
+        if (replacementNodeLesser != null)
+            replacementNodeLesser.parent = replacementParent;
+    }
+}
+```
+
+is reduced to:
+
+```java
+public void removeParent(Node<T> removed, Node<T> replacement, Node<T> replacementLesser, Node<T> replacementGreater) {
+    if (replacement.parent == null || replacement.parent == removed) return;
+
+    if (replacement.parent.lesser == replacement) {
+        replacement.parent.lesser = replacementGreater;
+        if (replacementGreater != null) replacementGreater.parent = replacement.parent;
+        return;
+    }
+    replacement.parent.greater = replacementLesser;
+    if(replacementLesser != null) replacementLesser.parent = replacement.parent;
+}
+```
+
+`replaceNodeWithNode` originally had an NCC of 30. Now the function is broken down into 4 functions with an NCC of 2, 5, 6 and 6.
+
+For the full changes, see:
+
+```sh
+git show src/com/jwetherell/algorithms/data_structures/BinarySearchTree.java
+```
 
 ### @nolanderc: `BinaryHeapArray.heapDown`
 
